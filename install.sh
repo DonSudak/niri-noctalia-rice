@@ -39,7 +39,7 @@ ask fishtheme  "Apply Catppuccin Mocha colors to fish syntax highlighting?" n
 REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
   adw-gtk-theme capitaine-cursors catppuccin-gtk-theme-mocha ttf-jetbrains-mono-nerd adwaita-fonts
   noto-fonts noto-fonts-emoji polkit-kde-agent xwayland-satellite xdg-desktop-portal-gnome
-  xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl
+  xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl base-devel
   telegram-desktop filezilla git openssh k9s
   podman podman-compose slirp4netns fuse-overlayfs)
 (( OPT[nvim] ))    && REPO_PKGS+=(neovim ripgrep fd lazygit tree-sitter-cli unzip)
@@ -53,6 +53,14 @@ if (( OPT[pkgs] )); then
     # names differ between repos; retry one by one so a single miss doesn't abort
     for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
   helper=$(command -v paru || command -v yay || true)
+  if [[ -z $helper ]]; then
+    # no AUR helper on this box yet: bootstrap paru (prebuilt, no Rust compile) so the AUR packages below can install
+    tmp=$(mktemp -d)
+    git clone --depth 1 https://aur.archlinux.org/paru-bin.git "$tmp" \
+      && (cd "$tmp" && makepkg -si --needed --noconfirm) || echo "!! paru bootstrap failed"
+    rm -rf "$tmp"
+    helper=$(command -v paru || true)
+  fi
   # -Syu (not just -S) so `update` also upgrades already-installed AUR packages, not just missing ones
   if [[ -n $helper ]]; then "$helper" -Syu --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
   else echo "!! no AUR helper: install manually: ${AUR_PKGS[*]}"; fi
