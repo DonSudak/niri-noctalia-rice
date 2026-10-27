@@ -157,7 +157,13 @@ if command -v npm >/dev/null; then
   # user-owned prefix, no sudo: `sudo npm install -g` skips postinstall scripts as a safety
   # measure when run as root, and leaves root-owned files behind
   npm config get prefix | grep -qx "$HOME/.local" || npm config set prefix "$HOME/.local"
-  npm install -g @anthropic-ai/claude-code @openai/codex || echo "!! npm global install failed: claude-code/codex"
+  # don't reinstall what's already there and working: re-running npm install -g re-triggers the
+  # native-binary download, which is what breaks it on every `update` even when it was fine before
+  for pkgcmd in "@anthropic-ai/claude-code:claude" "@openai/codex:codex"; do
+    pkg=${pkgcmd%%:*}; cmd=${pkgcmd##*:}
+    command -v "$cmd" >/dev/null && "$cmd" --version >/dev/null 2>&1 && continue
+    npm install -g "$pkg" || echo "!! npm global install failed: $pkg"
+  done
 fi
 
 if command -v fish >/dev/null; then
