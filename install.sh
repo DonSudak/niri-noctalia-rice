@@ -52,7 +52,7 @@ REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fi
   adw-gtk-theme capitaine-cursors catppuccin-gtk-theme-mocha ttf-jetbrains-mono-nerd adwaita-fonts
   noto-fonts noto-fonts-emoji polkit-kde-agent xwayland-satellite xdg-desktop-portal-gnome
   xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl base-devel
-  telegram-desktop filezilla git openssh k9s
+  telegram-desktop filezilla git openssh k9s cachy-update libnotify
   podman podman-compose slirp4netns fuse-overlayfs)
 (( OPT[nvim] ))    && REPO_PKGS+=(neovim ripgrep fd lazygit tree-sitter-cli unzip)
 (( OPT[greeter] )) && REPO_PKGS+=(greetd greetd-regreet plymouth)
@@ -129,6 +129,13 @@ if command -v gsettings >/dev/null; then
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
   gsettings set org.gnome.desktop.interface font-name 'Adwaita Sans 11' || true
   gsettings set org.gnome.desktop.interface monospace-font-name 'Adwaita Mono 11' || true
+fi
+
+# cachy-update has no non-interactive flag, so it's not used for this script's own `update`;
+# just wire up its tray applet + daily check for everyday OS updates
+if command -v cachy-update >/dev/null; then
+  cachy-update --tray --enable || true
+  cachy-update --check --enable || true
 fi
 
 if command -v npm >/dev/null; then
