@@ -2,7 +2,7 @@
 # Standalone installer: niri + Noctalia (Catppuccin Lavender), wezterm, fish+starship, greetd/ReGreet,
 # wallpapers, Handy (speech-to-text). Arch/CachyOS only. Run as a normal user; sudo is asked when needed.
 # Optional parts are asked interactively; without a TTY or with --yes the defaults [Y/n] are used.
-#   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--fish-theme]
+#   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--no-nvim] [--no-agents] [--firedragon] [--fish-theme]
 # Re-run anytime to update: ./install.sh update   (= --yes, plus a full pacman/AUR -Syu)
 set -euo pipefail
 
@@ -16,7 +16,7 @@ declare -A OPT   # name -> 1/0, preset by flags
 for a in "$@"; do case $a in
   update) UPDATE=1; YES=1;;
   --yes) YES=1;; --no-pkgs) OPT[pkgs]=0;; --no-greeter) OPT[greeter]=0;; --no-handy) OPT[handy]=0;;
-  --no-wallpapers) OPT[wallpapers]=0;; --fish-theme) OPT[fishtheme]=1;;
+  --no-wallpapers) OPT[wallpapers]=0;; --no-nvim) OPT[nvim]=0;; --no-agents) OPT[agents]=0;; --firedragon) OPT[firedragon]=1;; --fish-theme) OPT[fishtheme]=1;;
   *) echo "unknown arg: $a"; exit 1;; esac; done
 
 # ask <name> <question> <default y|n>  -> sets OPT[name]
@@ -31,18 +31,22 @@ ask pkgs       "Install packages (pacman/AUR)?" y
 ask greeter    "Replace the display manager with greetd + ReGreet (Catppuccin login screen)?" y
 ask wallpapers "Copy wallpapers to ~/Pictures/Wallpapers?" y
 ask handy      "Download and set up Handy (speech-to-text, Ctrl+Space)?" y
+ask nvim       "Install Neovim + AstroNvim config (plugins are fetched on first nvim start)?" y
+ask agents     "Install Claude Code and Codex agents (GSD) to ~/.claude/agents and ~/.codex/agents?" y
+ask firedragon "Install FireDragon browser (chaotic-aur/AUR)?" n
 ask fishtheme  "Apply Catppuccin Mocha colors to fish syntax highlighting?" n
 
 REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
   adw-gtk-theme capitaine-cursors catppuccin-gtk-theme-mocha ttf-jetbrains-mono-nerd adwaita-fonts
   noto-fonts noto-fonts-emoji polkit-kde-agent xwayland-satellite xdg-desktop-portal-gnome
   xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl
-  neovim ripgrep fd lazygit unzip
   telegram-desktop filezilla git openssh k9s
   podman podman-compose slirp4netns fuse-overlayfs)
+(( OPT[nvim] ))    && REPO_PKGS+=(neovim ripgrep fd lazygit tree-sitter-cli unzip)
 (( OPT[greeter] )) && REPO_PKGS+=(greetd greetd-regreet plymouth)
 (( OPT[handy] ))   && REPO_PKGS+=(fuse2 wtype xdotool)
 AUR_PKGS=(tela-circle-icon-theme-dracula clash-verge-rev-bin tg-ws-proxy-bin)
+(( OPT[firedragon] )) && AUR_PKGS+=(firedragon)
 
 if (( OPT[pkgs] )); then
   sudo pacman -Syu --needed --noconfirm "${REPO_PKGS[@]}" || {
@@ -67,6 +71,13 @@ install_tree() { # install_tree <srcdir> <dstdir>
   done
 }
 install_tree "$SRC/home" "$HOME"
+(( OPT[nvim] )) && install_tree "$SRC/nvim" "$HOME/.config/nvim"
+if (( OPT[agents] )); then
+  for t in claude codex; do
+    d="$HOME/.$t/agents"; mkdir -p "$d"
+    (cd "$SRC/agents/$t" && for f in *; do sed "s|@HOME@|$HOME|g" "$f" > "$d/$f"; done)
+  done
+fi
 CFG="$HOME/.config"
 sed -i "s|@HOME@|$HOME|g" "$CFG/noctalia/config.toml"
 if (( OPT[wallpapers] == 0 )); then
