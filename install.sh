@@ -117,7 +117,10 @@ if command -v gsettings >/dev/null; then
 fi
 
 if command -v npm >/dev/null; then
-  sudo npm install -g @anthropic-ai/claude-code @openai/codex || echo "!! npm global install failed: claude-code/codex"
+  # user-owned prefix, no sudo: `sudo npm install -g` skips postinstall scripts as a safety
+  # measure when run as root, and leaves root-owned files behind
+  npm config get prefix | grep -qx "$HOME/.local" || npm config set prefix "$HOME/.local"
+  npm install -g @anthropic-ai/claude-code @openai/codex || echo "!! npm global install failed: claude-code/codex"
 fi
 
 if command -v fish >/dev/null; then
