@@ -1,0 +1,21 @@
+// ────────────── Output Configuration ──────────────
+// You can run `niri msg outputs` to get the correct name for your displays.
+// You will have to remove "/-" and edit it before it takes effect.
+// https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
+output "Samsung Electric Company Odyssey G52A HNMW300848" {
+    mode "2560x1440@144.000"
+    transform "normal"
+    scale 1.0
+    position x=1080 y=0
+    // Заработает после включения Adaptive Sync в OSD-меню монитора
+    variable-refresh-rate on-demand=true
+}
+
+output "ASUSTek COMPUTER INC VG249Q3A T3LMTF032524" {
+    mode "1920x1080@165.003"
+    transform "270"
+    scale 1.0
+    position x=0 y=0
+    variable-refresh-rate on-demand=true
+}
+

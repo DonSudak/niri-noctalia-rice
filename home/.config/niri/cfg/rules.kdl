@@ -1,0 +1,26 @@
+    window-rule {
+        geometry-corner-radius 20 // Set every window radius to 20
+        clip-to-geometry true
+	open-maximized true
+    }
+
+    window-rule {
+        match app-id="Handy"
+        open-focused false
+        open-floating true
+    }
+
+    layer-rule {
+        match namespace="^noctalia-wallpaper*"
+        place-within-backdrop true
+    }
+
+    // Игры: без скруглений и клипа (иначе не работает direct scanout),
+    // VRR включается только пока игра на экране (on-demand)
+    window-rule {
+        match app-id="^steam_app_"
+        match app-id="^gamescope"
+        geometry-corner-radius 0
+        clip-to-geometry false
+        variable-refresh-rate true
+    }

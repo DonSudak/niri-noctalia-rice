@@ -1,0 +1,398 @@
+# Migrated from noctalia-shell v4 settings.json (2026-08-18)
+# Old JSON left in place: ~/.config/noctalia/settings.json
+
+[shell]
+avatar_path = "/home/janna/.face"
+font_family = "Adwaita Sans"
+polkit_agent = true
+setup_wizard_enabled = false
+telemetry_enabled = false
+clipboard_enabled = true
+clipboard_auto_paste = "off"
+time_format = "{:%H:%M}"
+date_format = "%a, %b %d"
+
+    [shell.animation]
+    enabled = true
+    speed = 1.0
+
+    [shell.launcher]
+    app_grid = true
+    categories = true
+    compact = false
+    show_icons = true
+    sort_by_usage = true
+    auto_paste = "off"
+
+    [shell.panel]
+    control_center_placement = "attached"
+    control_center_position = "auto"
+    launcher_placement = "floating"
+    launcher_position = "center"
+    session_placement = "floating"
+    session_position = "center"
+    wallpaper_placement = "attached"
+    clipboard_placement = "floating"
+    shadow = false
+    transparency_mode = "solid"
+
+    [shell.screen_corners]
+    enabled = true
+    size = 38
+
+    [shell.session]
+    grid = true
+    grid_columns = 3
+    show_shortcuts = true
+
+        [[shell.session.actions]]
+        action = "lock"
+        enabled = true
+        shortcut = "1"
+        countdown_seconds = 10.0
+
+        [[shell.session.actions]]
+        action = "lock_and_suspend"
+        enabled = true
+        shortcut = "2"
+        countdown_seconds = 10.0
+
+        [[shell.session.actions]]
+        action = "logout"
+        enabled = true
+        shortcut = "5"
+        countdown_seconds = 10.0
+
+        [[shell.session.actions]]
+        action = "reboot"
+        enabled = true
+        shortcut = "4"
+        countdown_seconds = 10.0
+
+        [[shell.session.actions]]
+        action = "shutdown"
+        enabled = true
+        shortcut = "6"
+        countdown_seconds = 10.0
+        variant = "destructive"
+
+    [shell.shadow]
+    alpha = 0.55
+    direction = "down"
+
+[audio]
+enable_overdrive = false
+enable_sounds = false
+
+[desktop_widgets]
+enabled = false
+
+[dock]
+enabled = false
+
+[idle]
+    [idle.behavior.lock]
+    enabled = false
+    timeout = 660.0
+
+    [idle.behavior.screen-off]
+    enabled = false
+    timeout = 600.0
+
+    [idle.behavior.lock-and-suspend]
+    enabled = false
+    timeout = 1800.0
+
+[location]
+auto_locate = true
+address = "St Petersburg"
+
+[lockscreen]
+enabled = true
+lock_before_suspend = true
+fingerprint = true
+blur_intensity = 0.0
+tint_intensity = 0.0
+
+[nightlight]
+enabled = false
+force = false
+temperature_day = 6500
+temperature_night = 4000
+
+[notification]
+enable_daemon = true
+position = "top_right"
+layer = "overlay"
+monitors = [ "DP-2" ]
+background_opacity = 1.0
+collapse_on_dismiss = true
+
+[osd]
+enabled = true
+position = "top_right"
+position_vertical = "top_right"
+background_opacity = 1.0
+
+    [osd.kinds]
+    keyboard_layout = false
+    media = false
+    volume = true
+    brightness = true
+
+[weather]
+enabled = true
+effects = true
+unit = "metric"
+
+[calendar]
+enabled = true
+    [control_center.calendar]
+    show_events_card = true
+    show_week_numbers = false
+
+[control_center]
+show_session_button = true
+show_shortcut_labels = true
+
+    [[control_center.shortcuts]]
+    type = "wifi"
+
+    [[control_center.shortcuts]]
+    type = "bluetooth"
+
+    [[control_center.shortcuts]]
+    type = "caffeine"
+
+    [[control_center.shortcuts]]
+    type = "nightlight"
+
+    [[control_center.shortcuts]]
+    type = "notification"
+
+    [[control_center.shortcuts]]
+    type = "power_profile"
+
+[theme]
+mode = "dark"
+source = "custom"
+custom_palette = "Catppuccin-Lavender"
+pure_black_dark = false
+
+    [theme.templates]
+    enable_builtin_templates = true
+    enable_community_templates = true
+    builtin_ids = [
+        "alacritty",
+        "btop",
+        "cava",
+        "emacs",
+        "foot",
+        "ghostty",
+        "gtk",
+        "helix",
+        "hyprland",
+        "kde",
+        "kitty",
+        "labwc",
+        "mango",
+        "niri",
+        "qt",
+        "scroll",
+        "starship",
+        "sway",
+        "wezterm"
+    ]
+    community_ids = [
+        "discord",
+        "fuzzel",
+        "hyprtoolkit",
+        "pywalfox",
+        "spicetify",
+        "steam",
+        "telegram",
+        "vicinae",
+        "vscode",
+        "walker",
+        "yazi",
+        "zathura",
+        "zed",
+        "zen-browser"
+    ]
+
+[wallpaper]
+enabled = true
+directory = "/home/janna/Pictures/Wallpapers"
+fill_mode = "crop"
+fill_color = "#000000"
+edge_smoothness = 0.05
+transition = [ "fade", "disc", "stripes", "wipe", "honeycomb" ]
+transition_duration = 1500.0
+transition_on_startup = false
+
+    [wallpaper.automation]
+    enabled = false
+    interval_seconds = 300
+    order = "random"
+    recursive = true
+
+    [wallpaper.default]
+    path = "/home/janna/Pictures/Wallpapers/wallhaven_dggkwj.jpg"
+
+[plugins]
+auto_update = true
+enabled = [
+    "noctalia/timer",
+    "noctalia/screen_recorder",
+    "nightwatch75/todo",
+    "8bury/mini-docker"
+]
+
+[system.monitor]
+cpu_usage_critical_threshold = 90.0
+cpu_temp_critical_threshold = 90.0
+ram_pct_critical_threshold = 90.0
+swap_pct_critical_threshold = 90.0
+
+# Main bar (DP-2 and fallback). DP-1 override below.
+[bar]
+order = [ "default" ]
+
+    [bar.default]
+    position = "top"
+    enabled = true
+    auto_hide = false
+    reserve_space = true
+    thickness = 38
+    background_opacity = 0.93
+    border_width = 0.0
+    shadow = false
+    capsule = true
+    capsule_fill = "surface_variant"
+    capsule_opacity = 1.0
+    radius = 12
+    concave_edge_corners = true
+    margin_ends = 4
+    margin_edge = 0
+    padding = 8
+    widget_spacing = 6
+    scale = 1.0
+    font_weight = 700
+    show_on_workspace_switch = true
+    start = [ "media", "launcher" ]
+    center = [ "group:sysmon", "workspaces", "clock" ]
+    end = [
+        "tray",
+        "keyboard_layout",
+        "volume",
+        "network",
+        "control-center",
+        "notifications"
+    ]
+
+        [[bar.default.capsule_group]]
+        id = "sysmon"
+        members = [ "cpu", "temp", "ram" ]
+        fill = "surface_variant"
+        opacity = 1.0
+        padding = 6.0
+
+    [bar.default.monitor.dp1]
+    match = "DP-1"
+    start = []
+    center = [ "clock", "workspaces", "media" ]
+    end = [
+        "keyboard_layout",
+        "volume",
+        "control-center",
+        "notifications"
+    ]
+
+[widget.clock]
+type = "clock"
+format = "{:%H:%M %a, %b %d}"
+vertical_format = "{:%H\n%M}"
+tooltip_format = "{:%H:%M %a, %b %d}"
+
+[widget.workspaces]
+type = "workspaces"
+style = "regular"
+show_labels = true
+label_source = "id"
+hide_when_empty = false
+focused_output_only = false
+focused_color = "primary"
+occupied_color = "secondary"
+empty_color = "secondary"
+pill_scale = 0.6
+
+[widget.media]
+type = "media"
+artist_first = true
+hide_when_no_media = true
+max_length = 145.0
+min_length = 80.0
+title_scroll = "on_hover"
+art_size = 16.0
+
+[widget.cpu]
+type = "sysmon"
+stat = "cpu_usage"
+visualization = "none"
+show_glyph = true
+show_value = true
+font_family = "monospace"
+
+[widget.temp]
+type = "sysmon"
+stat = "cpu_temp"
+visualization = "none"
+show_glyph = true
+show_value = true
+font_family = "monospace"
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_used"
+visualization = "none"
+show_glyph = true
+show_value = true
+font_family = "monospace"
+
+[widget.volume]
+type = "volume"
+device = "output"
+show_label = false
+
+[widget.keyboard_layout]
+type = "keyboard_layout"
+hide_when_single_layout = false
+
+[widget.network]
+type = "network"
+show_label = false
+vpn_status = "both"
+show_vpn_label = false
+
+[widget.tray]
+type = "tray"
+drawer = true
+pinned = [
+    "Telegram Desktop",
+    "spotify-client",
+    "Discord",
+    "steam",
+    "OBS Studio",
+    "AmneziaVPN"
+]
+
+[widget.notifications]
+type = "notifications"
+hide_when_no_unread = true
+
+[widget.control-center]
+type = "control-center"
+glyph = "noctalia"
+
+[widget.launcher]
+type = "launcher"

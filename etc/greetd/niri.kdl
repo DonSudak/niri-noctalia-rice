@@ -1,0 +1,33 @@
+// Конфиг niri для экрана greetd (только ReGreet).
+// Скопировать в /etc/greetd/niri.kdl
+// В /etc/greetd/config.toml указать:
+//   command = "niri --config /etc/greetd/niri.kdl"
+
+// Основной монитор — DP-2 (focus + все окна при старте на нём)
+output "DP-2" {
+  focus-at-startup
+  // Фон как у ReGreet/Catppuccin Mocha base
+  backdrop-color "#1e1e2e"
+}
+
+output "DP-1" {
+  // Тот же цвет, чтобы не был серым
+  backdrop-color "#1e1e2e"
+}
+
+// Все окна в первые 60 сек (ReGreet) — на DP-2
+window-rule {
+  match at-startup=true
+  open-on-output "DP-2"
+}
+
+spawn-sh-at-startup "regreet; niri msg action quit --skip-confirmation"
+
+hotkey-overlay {
+  skip-at-startup
+}
+
+cursor {
+  xcursor-theme "Adwaita"
+  xcursor-size 24
+}

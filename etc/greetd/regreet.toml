@@ -1,0 +1,33 @@
+# ReGreet + Catppuccin
+# Скопировать в /etc/greetd/regreet.toml (владелец root, права 644)
+
+[background]
+# Путь к фону; можно заменить на свой
+path = "/usr/share/backgrounds/greet.jpg"
+fit = "Cover"
+
+[env]
+
+[GTK]
+application_prefer_dark_theme = true
+cursor_theme_name = "Adwaita"
+cursor_blink = true
+font_name = "Cantarell 16"
+icon_theme_name = "Adwaita"
+# Имя темы: после установки catppuccin-gtk-theme-mocha проверь
+#   ls /usr/share/themes/ | grep -i catp
+# и подставь нужный вариант (Mocha-Mauve, Mocha-Blue и т.д.)
+theme_name = "catppuccin-mocha-mauve-standard+default"
+
+[commands]
+reboot = ["systemctl", "reboot"]
+poweroff = ["systemctl", "poweroff"]
+x11_prefix = ["startx", "/usr/bin/env"]
+
+[appearance]
+greeting_msg = "Welcome"
+
+[widget.clock]
+format = "%a %H:%M"
+resolution = "500ms"
+label_width = 150
