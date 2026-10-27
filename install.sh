@@ -64,15 +64,18 @@ if (( OPT[pkgs] )); then
   sudo pacman -Syu --needed --noconfirm "${REPO_PKGS[@]}" || {
     # names differ between repos; retry one by one so a single miss doesn't abort
     for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
-  helper=$(command -v paru || command -v yay || true)
+  # existing but non-functional (e.g. a paru-bin linked against the wrong libalpm) doesn't count
+  helper=""
+  for h in paru yay; do command -v "$h" >/dev/null && "$h" --version >/dev/null 2>&1 && { helper=$h; break; }; done
   if [[ -z $helper ]]; then
-    # no AUR helper on this box yet: bootstrap paru. Built from source (not paru-bin) so it links
-    # against whatever libalpm this box actually has (CachyOS ships its own pacman/libalpm ABI).
+    # no working AUR helper on this box: bootstrap paru. Built from source (not paru-bin) so it
+    # links against whatever libalpm this box actually has (CachyOS ships its own pacman/libalpm ABI).
+    sudo pacman -Rns --noconfirm paru-bin 2>/dev/null || true
     tmp=$(mktemp -d)
     git clone --depth 1 https://aur.archlinux.org/paru.git "$tmp" \
       && (cd "$tmp" && makepkg -si --needed --noconfirm) || echo "!! paru bootstrap failed"
     rm -rf "$tmp"
-    helper=$(command -v paru || true)
+    command -v paru >/dev/null && paru --version >/dev/null 2>&1 && helper=paru
   fi
   # -Syu (not just -S) so `update` also upgrades already-installed AUR packages, not just missing ones
   if [[ -n $helper ]]; then "$helper" -Syu --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
