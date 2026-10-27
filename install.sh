@@ -54,9 +54,10 @@ if (( OPT[pkgs] )); then
     for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
   helper=$(command -v paru || command -v yay || true)
   if [[ -z $helper ]]; then
-    # no AUR helper on this box yet: bootstrap paru (prebuilt, no Rust compile) so the AUR packages below can install
+    # no AUR helper on this box yet: bootstrap paru. Built from source (not paru-bin) so it links
+    # against whatever libalpm this box actually has (CachyOS ships its own pacman/libalpm ABI).
     tmp=$(mktemp -d)
-    git clone --depth 1 https://aur.archlinux.org/paru-bin.git "$tmp" \
+    git clone --depth 1 https://aur.archlinux.org/paru.git "$tmp" \
       && (cd "$tmp" && makepkg -si --needed --noconfirm) || echo "!! paru bootstrap failed"
     rm -rf "$tmp"
     helper=$(command -v paru || true)
