@@ -3,7 +3,7 @@
 # wallpapers, Handy (speech-to-text). Arch/CachyOS only. Run as a normal user; sudo is asked when needed.
 # Optional parts are asked interactively; without a TTY or with --yes the defaults [Y/n] are used.
 #   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--no-nvim] [--no-agents] [--firedragon] [--fish-theme]
-# Re-run anytime to update: ./install.sh update   (= --yes, plus a full pacman/AUR -Syu)
+# Re-run anytime to update: ./install.sh update   (= --yes; package updates run through cachy-update, interactively)
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,7 +52,7 @@ REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fi
   adw-gtk-theme capitaine-cursors catppuccin-gtk-theme-mocha ttf-jetbrains-mono-nerd adwaita-fonts
   noto-fonts noto-fonts-emoji polkit-kde-agent xwayland-satellite xdg-desktop-portal-gnome
   xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl base-devel
-  telegram-desktop filezilla git openssh k9s cachy-update libnotify
+  telegram-desktop filezilla git openssh k9s
   podman podman-compose slirp4netns fuse-overlayfs)
 (( OPT[nvim] ))    && REPO_PKGS+=(neovim ripgrep fd lazygit tree-sitter-cli unzip)
 (( OPT[greeter] )) && REPO_PKGS+=(greetd greetd-regreet plymouth)
@@ -61,9 +61,17 @@ AUR_PKGS=(tela-circle-icon-theme-dracula clash-verge-rev-bin tg-ws-proxy-bin spo
 (( OPT[firedragon] )) && AUR_PKGS+=(firedragon)
 
 if (( OPT[pkgs] )); then
-  sudo pacman -Syu --needed --noconfirm "${REPO_PKGS[@]}" || {
-    # names differ between repos; retry one by one so a single miss doesn't abort
-    for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
+  # All package updates go through cachy-update from here on (pacnew/orphan/cache/reboot checks,
+  # AUR via paru/yay) instead of a bare pacman -Syu. Bootstrap just it and run it interactively
+  # first; everything below only fills in what's still missing, it doesn't upgrade.
+  sudo pacman -S --needed --noconfirm cachy-update libnotify
+  if [[ -t 0 ]]; then
+    echo ">>> Launching cachy-update — go through its prompts, this script continues after it exits."
+    cachy-update || echo "!! cachy-update exited non-zero; continuing anyway"
+  else
+    echo "!! no TTY: skipping the interactive cachy-update run, run it yourself afterwards"
+  fi
+
   # existing but non-functional (e.g. a paru-bin linked against the wrong libalpm) doesn't count
   helper=""
   for h in paru yay; do command -v "$h" >/dev/null && "$h" --version >/dev/null 2>&1 && { helper=$h; break; }; done
@@ -77,8 +85,13 @@ if (( OPT[pkgs] )); then
     rm -rf "$tmp"
     command -v paru >/dev/null && paru --version >/dev/null 2>&1 && helper=paru
   fi
-  # -Syu (not just -S) so `update` also upgrades already-installed AUR packages, not just missing ones
-  if [[ -n $helper ]]; then "$helper" -Syu --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
+
+  # cachy-update already brought installed packages up to date above; just fill in what's
+  # missing from these lists (no -u here on purpose)
+  sudo pacman -S --needed --noconfirm "${REPO_PKGS[@]}" || {
+    # names differ between repos; retry one by one so a single miss doesn't abort
+    for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
+  if [[ -n $helper ]]; then "$helper" -S --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
   else echo "!! no AUR helper: install manually: ${AUR_PKGS[*]}"; fi
   # rootless podman needs a subuid/subgid range; useradd grants one by default, but add it if missing
   grep -q "^$USER:" /etc/subuid 2>/dev/null || sudo usermod --add-subuids 100000-165535 "$USER"
