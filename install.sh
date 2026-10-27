@@ -85,7 +85,7 @@ fi
 
 if command -v fish >/dev/null; then
   fish -c 'type -q fisher; and fisher update' || true
-  (( OPT[fishtheme] )) && { fish -c 'fish_config theme save "Catppuccin Mocha"' || true; }
+  (( OPT[fishtheme] )) && { fish -c 'fish_config theme save catppuccin-mocha' || true; }
   [[ $SHELL == */fish ]] || chsh -s "$(command -v fish)" || true
 fi
 
