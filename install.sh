@@ -45,7 +45,7 @@ REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fi
 (( OPT[nvim] ))    && REPO_PKGS+=(neovim ripgrep fd lazygit tree-sitter-cli unzip)
 (( OPT[greeter] )) && REPO_PKGS+=(greetd greetd-regreet plymouth)
 (( OPT[handy] ))   && REPO_PKGS+=(fuse2 wtype xdotool)
-AUR_PKGS=(tela-circle-icon-theme-dracula clash-verge-rev-bin tg-ws-proxy-bin)
+AUR_PKGS=(tela-circle-icon-theme-dracula clash-verge-rev-bin tg-ws-proxy-bin spotify-launcher)
 (( OPT[firedragon] )) && AUR_PKGS+=(firedragon)
 
 if (( OPT[pkgs] )); then
