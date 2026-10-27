@@ -19,6 +19,18 @@ for a in "$@"; do case $a in
   --no-wallpapers) OPT[wallpapers]=0;; --no-nvim) OPT[nvim]=0;; --no-agents) OPT[agents]=0;; --firedragon) OPT[firedragon]=1;; --fish-theme) OPT[fishtheme]=1;;
   *) echo "unknown arg: $a"; exit 1;; esac; done
 
+# pull the latest repo (install.sh/configs) before doing anything, then re-exec once so the
+# rest of this run uses the fresh copy. NIRI_RICE_REEXECED guards against looping forever.
+if [[ -z ${NIRI_RICE_REEXECED:-} ]]; then
+  if git -C "$SRC" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    if git -C "$SRC" pull --ff-only; then
+      NIRI_RICE_REEXECED=1 exec "$SRC/install.sh" "$@"
+    else
+      echo "!! git pull failed (local changes in $SRC?); continuing with the checked-out copy"
+    fi
+  fi
+fi
+
 # ask <name> <question> <default y|n>  -> sets OPT[name]
 ask() {
   [[ -n ${OPT[$1]:-} ]] && return
