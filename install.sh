@@ -87,6 +87,9 @@ else
   install_tree "$SRC/wallpapers" "$HOME/Pictures/Wallpapers"
 fi
 
+# tg-ws-proxy: autostart it (in its tray) only if the AUR install actually succeeded
+command -v tg-ws-proxy >/dev/null && printf '    spawn-sh-at-startup "tg-ws-proxy"\n' >> "$CFG/niri/cfg/autostart.kdl"
+
 # monitors: generated from what niri sees (now if a session is running, otherwise at first niri start)
 "$HOME/.local/bin/niri-autodisplay" 2>/dev/null || true
 
