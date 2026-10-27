@@ -10,6 +10,7 @@ git clone <repo> && cd niri-noctalia-rice
 - `--fish-theme` применить Catppuccin Mocha к подсветке fish (на исходной машине не был применён)
 - Необязательные части (пакеты, greeter, обои, Handy, тема fish) спрашиваются интерактивно; без TTY или с `--yes` берутся значения по умолчанию, а флаги `--no-*` / `--fish-theme` отвечают за вас
 - `--no-nvim` / `--no-agents`: пропустить Neovim с конфигом AstroNvim (`nvim/`, плагины подтянутся при первом запуске `nvim`) и агентов Claude Code / Codex (`agents/`, ставятся в `~/.claude/agents` и `~/.codex/agents`; сами агенты GSD вызывают `~/.codex/get-shit-done`, его нужно ставить отдельно)
+- `--firedragon`: поставить браузер FireDragon (`firedragon` из chaotic-aur/AUR через paru/yay; по умолчанию не ставится; профиль не переносится)
 - Handy: AppImage качается с GitHub (последняя версия, или `HANDY_VERSION=0.8.3`), ставится в `~/.local/opt/handy`, симлинк `~/.local/bin/handy`, настройки (PTT Ctrl+Space, `handy-paste` через wl-copy+wtype) кладутся только если Handy ещё не настраивался; модели не в репозитории, выбираются в окне Handy
 
 Перезаписанные файлы сохраняются как `*.bak-<время>`. После первого входа в niri: `noctalia msg templates-apply`.

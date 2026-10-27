@@ -2,7 +2,7 @@
 # Standalone installer: niri + Noctalia (Catppuccin Lavender), wezterm, fish+starship, greetd/ReGreet,
 # wallpapers, Handy (speech-to-text). Arch/CachyOS only. Run as a normal user; sudo is asked when needed.
 # Optional parts are asked interactively; without a TTY or with --yes the defaults [Y/n] are used.
-#   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--no-nvim] [--no-agents] [--fish-theme]
+#   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--no-nvim] [--no-agents] [--firedragon] [--fish-theme]
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,7 +13,7 @@ YES=0; [[ -t 0 ]] || YES=1
 declare -A OPT   # name -> 1/0, preset by flags
 for a in "$@"; do case $a in
   --yes) YES=1;; --no-pkgs) OPT[pkgs]=0;; --no-greeter) OPT[greeter]=0;; --no-handy) OPT[handy]=0;;
-  --no-wallpapers) OPT[wallpapers]=0;; --no-nvim) OPT[nvim]=0;; --no-agents) OPT[agents]=0;; --fish-theme) OPT[fishtheme]=1;;
+  --no-wallpapers) OPT[wallpapers]=0;; --no-nvim) OPT[nvim]=0;; --no-agents) OPT[agents]=0;; --firedragon) OPT[firedragon]=1;; --fish-theme) OPT[fishtheme]=1;;
   *) echo "unknown arg: $a"; exit 1;; esac; done
 
 # ask <name> <question> <default y|n>  -> sets OPT[name]
@@ -30,6 +30,7 @@ ask wallpapers "Copy wallpapers to ~/Pictures/Wallpapers?" y
 ask handy      "Download and set up Handy (speech-to-text, Ctrl+Space)?" y
 ask nvim       "Install Neovim + AstroNvim config (plugins are fetched on first nvim start)?" y
 ask agents     "Install Claude Code and Codex agents (GSD) to ~/.claude/agents and ~/.codex/agents?" y
+ask firedragon "Install FireDragon browser (chaotic-aur/AUR)?" n
 ask fishtheme  "Apply Catppuccin Mocha colors to fish syntax highlighting?" n
 
 REPO_PKGS=(python niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
@@ -40,6 +41,7 @@ REPO_PKGS=(python niri noctalia cachyos-niri-noctalia wezterm fish fisher starsh
 (( OPT[greeter] )) && REPO_PKGS+=(greetd greetd-regreet plymouth)
 (( OPT[handy] ))   && REPO_PKGS+=(fuse2 wtype xdotool)
 AUR_PKGS=(tela-circle-icon-theme-dracula)
+(( OPT[firedragon] )) && AUR_PKGS+=(firedragon)
 
 if (( OPT[pkgs] )); then
   sudo pacman -Syu --needed --noconfirm "${REPO_PKGS[@]}" || {
