@@ -105,7 +105,6 @@ enabled = false
 
 [location]
 auto_locate = true
-address = "St Petersburg"
 
 [lockscreen]
 enabled = true
