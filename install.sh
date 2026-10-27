@@ -2,7 +2,7 @@
 # Standalone installer: niri + Noctalia (Catppuccin Lavender), wezterm, fish+starship, greetd/ReGreet,
 # wallpapers, Handy (speech-to-text). Arch/CachyOS only. Run as a normal user; sudo is asked when needed.
 # Optional parts are asked interactively; without a TTY or with --yes the defaults [Y/n] are used.
-#   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--no-nvim] [--no-agents] [--firedragon] [--fish-theme]
+#   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--no-nvim] [--no-agents] [--no-firedragon] [--fish-theme]
 # Re-run anytime to update: ./install.sh update   (= --yes; package updates run through cachy-update, interactively)
 set -euo pipefail
 
@@ -16,7 +16,7 @@ declare -A OPT   # name -> 1/0, preset by flags
 for a in "$@"; do case $a in
   update) UPDATE=1; YES=1;;
   --yes) YES=1;; --no-pkgs) OPT[pkgs]=0;; --no-greeter) OPT[greeter]=0;; --no-handy) OPT[handy]=0;;
-  --no-wallpapers) OPT[wallpapers]=0;; --no-nvim) OPT[nvim]=0;; --no-agents) OPT[agents]=0;; --firedragon) OPT[firedragon]=1;; --fish-theme) OPT[fishtheme]=1;;
+  --no-wallpapers) OPT[wallpapers]=0;; --no-nvim) OPT[nvim]=0;; --no-agents) OPT[agents]=0;; --no-firedragon) OPT[firedragon]=0;; --fish-theme) OPT[fishtheme]=1;;
   *) echo "unknown arg: $a"; exit 1;; esac; done
 
 # pull the latest repo (install.sh/configs) before doing anything, then re-exec once so the
@@ -45,7 +45,7 @@ ask wallpapers "Copy wallpapers to ~/Pictures/Wallpapers?" y
 ask handy      "Download and set up Handy (speech-to-text, Ctrl+Space)?" y
 ask nvim       "Install Neovim + AstroNvim config (plugins are fetched on first nvim start)?" y
 ask agents     "Install Claude Code and Codex agents (GSD) to ~/.claude/agents and ~/.codex/agents?" y
-ask firedragon "Install FireDragon browser (chaotic-aur/AUR)?" n
+ask firedragon "Install FireDragon browser (chaotic-aur/AUR), replacing Firefox?" y
 ask fishtheme  "Apply Catppuccin Mocha colors to fish syntax highlighting?" n
 
 REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
@@ -93,6 +93,8 @@ if (( OPT[pkgs] )); then
     for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
   if [[ -n $helper ]]; then "$helper" -S --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
   else echo "!! no AUR helper: install manually: ${AUR_PKGS[*]}"; fi
+  # FireDragon replaces Firefox, not sit alongside it -- only drop Firefox once FireDragon is actually there
+  (( OPT[firedragon] )) && command -v firedragon >/dev/null && sudo pacman -Rns --noconfirm firefox 2>/dev/null || true
   # rootless podman needs a subuid/subgid range; useradd grants one by default, but add it if missing
   grep -q "^$USER:" /etc/subuid 2>/dev/null || sudo usermod --add-subuids 100000-165535 "$USER"
   grep -q "^$USER:" /etc/subgid 2>/dev/null || sudo usermod --add-subgids 100000-165535 "$USER"
