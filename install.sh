@@ -157,12 +157,18 @@ if command -v npm >/dev/null; then
   # user-owned prefix, no sudo: `sudo npm install -g` skips postinstall scripts as a safety
   # measure when run as root, and leaves root-owned files behind
   npm config get prefix | grep -qx "$HOME/.local" || npm config set prefix "$HOME/.local"
-  # don't reinstall what's already there and working: re-running npm install -g re-triggers the
-  # native-binary download, which is what breaks it on every `update` even when it was fine before
+  # don't touch what's already there and working (a plain re-run risks the race below again)
   for pkgcmd in "@anthropic-ai/claude-code:claude" "@openai/codex:codex"; do
     pkg=${pkgcmd%%:*}; cmd=${pkgcmd##*:}
-    command -v "$cmd" >/dev/null && "$cmd" --version >/dev/null 2>&1 && continue
-    npm install -g "$pkg" || echo "!! npm global install failed: $pkg"
+    working() { command -v "$cmd" >/dev/null && "$cmd" --version >/dev/null 2>&1; }
+    working && continue
+    npm install -g "$pkg" || true
+    # postinstall copies the binary from a sibling optionalDependency package; on a fresh
+    # install that sibling can still be mid-extraction when postinstall runs, leaving the
+    # binary missing. A second install -g is a no-op network-wise (already cached) but
+    # re-runs postinstall once the sibling is actually on disk, which fixes it.
+    working || npm install -g "$pkg" || true
+    working || echo "!! $cmd still broken after a retry: run 'node \"\$(npm root -g)/$pkg/install.cjs\"' by hand"
   done
 fi
 
