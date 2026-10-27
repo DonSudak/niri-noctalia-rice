@@ -122,6 +122,10 @@ if not test -x /usr/bin/yay; and test -x /usr/bin/paru
     alias yay 'paru'
 end
 
+# Podman instead of Docker
+alias docker 'podman'
+alias docker-compose 'podman-compose'
+
 # Common use
 alias .. 'cd ..'
 alias ... 'cd ../..'

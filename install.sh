@@ -3,6 +3,7 @@
 # wallpapers, Handy (speech-to-text). Arch/CachyOS only. Run as a normal user; sudo is asked when needed.
 # Optional parts are asked interactively; without a TTY or with --yes the defaults [Y/n] are used.
 #   ./install.sh [--yes] [--no-pkgs] [--no-greeter] [--no-handy] [--no-wallpapers] [--fish-theme]
+# Re-run anytime to update: ./install.sh update   (= --yes, plus a full pacman/AUR -Syu)
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,8 +11,10 @@ SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 command -v pacman >/dev/null || { echo "pacman not found: Arch-based only"; exit 1; }
 
 YES=0; [[ -t 0 ]] || YES=1
+UPDATE=0
 declare -A OPT   # name -> 1/0, preset by flags
 for a in "$@"; do case $a in
+  update) UPDATE=1; YES=1;;
   --yes) YES=1;; --no-pkgs) OPT[pkgs]=0;; --no-greeter) OPT[greeter]=0;; --no-handy) OPT[handy]=0;;
   --no-wallpapers) OPT[wallpapers]=0;; --fish-theme) OPT[fishtheme]=1;;
   *) echo "unknown arg: $a"; exit 1;; esac; done
@@ -30,21 +33,28 @@ ask wallpapers "Copy wallpapers to ~/Pictures/Wallpapers?" y
 ask handy      "Download and set up Handy (speech-to-text, Ctrl+Space)?" y
 ask fishtheme  "Apply Catppuccin Mocha colors to fish syntax highlighting?" n
 
-REPO_PKGS=(python niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
+REPO_PKGS=(python nodejs npm niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
   adw-gtk-theme capitaine-cursors catppuccin-gtk-theme-mocha ttf-jetbrains-mono-nerd adwaita-fonts
   noto-fonts noto-fonts-emoji polkit-kde-agent xwayland-satellite xdg-desktop-portal-gnome
-  xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl)
+  xdg-desktop-portal-gtk gnome-keyring wl-clipboard curl
+  neovim ripgrep fd lazygit unzip
+  telegram-desktop filezilla git openssh k9s
+  podman podman-compose slirp4netns fuse-overlayfs)
 (( OPT[greeter] )) && REPO_PKGS+=(greetd greetd-regreet plymouth)
 (( OPT[handy] ))   && REPO_PKGS+=(fuse2 wtype xdotool)
-AUR_PKGS=(tela-circle-icon-theme-dracula)
+AUR_PKGS=(tela-circle-icon-theme-dracula clash-verge-rev-bin tg-ws-proxy-bin)
 
 if (( OPT[pkgs] )); then
   sudo pacman -Syu --needed --noconfirm "${REPO_PKGS[@]}" || {
     # names differ between repos; retry one by one so a single miss doesn't abort
     for p in "${REPO_PKGS[@]}"; do sudo pacman -S --needed --noconfirm "$p" || echo "!! skipped $p"; done; }
   helper=$(command -v paru || command -v yay || true)
-  if [[ -n $helper ]]; then "$helper" -S --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
+  # -Syu (not just -S) so `update` also upgrades already-installed AUR packages, not just missing ones
+  if [[ -n $helper ]]; then "$helper" -Syu --needed --noconfirm "${AUR_PKGS[@]}" || echo "!! AUR failed: ${AUR_PKGS[*]}"
   else echo "!! no AUR helper: install manually: ${AUR_PKGS[*]}"; fi
+  # rootless podman needs a subuid/subgid range; useradd grants one by default, but add it if missing
+  grep -q "^$USER:" /etc/subuid 2>/dev/null || sudo usermod --add-subuids 100000-165535 "$USER"
+  grep -q "^$USER:" /etc/subgid 2>/dev/null || sudo usermod --add-subgids 100000-165535 "$USER"
 fi
 
 # ---------- user files (existing ones are backed up to <file>.bak-<ts>) ----------
@@ -81,6 +91,10 @@ if command -v gsettings >/dev/null; then
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
   gsettings set org.gnome.desktop.interface font-name 'Adwaita Sans 11' || true
   gsettings set org.gnome.desktop.interface monospace-font-name 'Adwaita Mono 11' || true
+fi
+
+if command -v npm >/dev/null; then
+  sudo npm install -g @anthropic-ai/claude-code @openai/codex || echo "!! npm global install failed: claude-code/codex"
 fi
 
 if command -v fish >/dev/null; then
