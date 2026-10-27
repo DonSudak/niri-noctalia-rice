@@ -4,10 +4,9 @@
 
 ```
 git clone <repo> && cd niri-noctalia-rice
-./install.sh [--displays] [--fish-theme] [--no-pkgs] [--no-greeter]
+./install.sh [--fish-theme] [--no-pkgs] [--no-greeter]
 ```
 
-- `--displays` взять мою раскладку мониторов (`display.kdl.janna`), иначе niri определяет сам
 - `--fish-theme` применить Catppuccin Mocha к подсветке fish (на исходной машине не был применён)
 - `--no-pkgs` / `--no-greeter` пропустить пакеты / замену display manager
 
@@ -23,7 +22,7 @@ git clone <repo> && cd niri-noctalia-rice
 | `etc/greetd` | greetd + ReGreet в мини-сессии niri, фон `greet.jpg` |
 
 ## Отличия от исходной машины
-- Мониторы не прописаны жёстко; greeter генерирует `output` по подключённым портам.
+- Мониторы определяются автоматически (`~/.local/bin/niri-autodisplay` при каждом старте niri: макс. частота при родном разрешении, VRR, масштаб по DPI, слева направо; убери строку AUTOGEN в `display.kdl`, чтобы зафиксировать вручную; поворот не определяется, моя раскладка в `display.kdl.janna`); greeter генерирует `output` по подключённым портам.
 - Исправлен фон greeter'а (раньше указывал на несуществующий `greet.png`).
 - Убраны: путь к Handy AppImage (добавляется, если файл есть), garuda-алиас и логотип fastfetch, kvantum/qt5ct (не использовались).
 - Не включены: плагины Noctalia (ставятся сами), `fish_variables`, `settings.json` v4, кэш/состояние.

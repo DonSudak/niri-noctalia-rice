@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Standalone installer: niri + Noctalia (Catppuccin Lavender), wezterm, fish+starship, greetd/ReGreet, wallpapers.
 # Arch/CachyOS only. Run as your normal user (sudo is asked only for packages and /etc).
-#   ./install.sh [--displays] [--fish-theme] [--no-pkgs] [--no-greeter]
-#     --displays    use my monitor layout (cfg/display.kdl.janna) instead of niri auto-detect
+#   ./install.sh [--fish-theme] [--no-pkgs] [--no-greeter]
 #     --fish-theme  apply Catppuccin Mocha to fish syntax colors (wasn't active on the source machine)
 #     --no-pkgs     skip package installation
 #     --no-greeter  skip greetd/ReGreet (leave current display manager alone)
@@ -12,12 +11,12 @@ SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 [[ $EUID -ne 0 ]] || { echo "run as normal user, not root"; exit 1; }
 command -v pacman >/dev/null || { echo "pacman not found: Arch-based only"; exit 1; }
 
-DISPLAYS=0 FISHTHEME=0 PKGS=1 GREETER=1
+FISHTHEME=0 PKGS=1 GREETER=1
 for a in "$@"; do case $a in
-  --displays) DISPLAYS=1;; --fish-theme) FISHTHEME=1;; --no-pkgs) PKGS=0;; --no-greeter) GREETER=0;;
+  --fish-theme) FISHTHEME=1;; --no-pkgs) PKGS=0;; --no-greeter) GREETER=0;;
   *) echo "unknown arg: $a"; exit 1;; esac; done
 
-REPO_PKGS=(niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
+REPO_PKGS=(python niri noctalia cachyos-niri-noctalia wezterm fish fisher starship eza bat fastfetch ugrep direnv
   adw-gtk-theme capitaine-cursors catppuccin-gtk-theme-mocha ttf-jetbrains-mono-nerd adwaita-fonts
   noto-fonts noto-fonts-emoji polkit-kde-agent xwayland-satellite xdg-desktop-portal-gnome
   xdg-desktop-portal-gtk gnome-keyring wl-clipboard greetd greetd-regreet plymouth)
@@ -44,7 +43,8 @@ install_tree() { # install_tree <srcdir> <dstdir>
 install_tree "$SRC/home" "$HOME"
 
 CFG="$HOME/.config"
-(( DISPLAYS )) && cp "$CFG/niri/cfg/display.kdl.janna" "$CFG/niri/cfg/display.kdl"
+# monitors: generated from what niri sees (now if a session is running, otherwise at first niri start)
+"$HOME/.local/bin/niri-autodisplay" 2>/dev/null || true
 
 # Re-add my AppImage autostart only if it exists on this machine
 [[ -x /mnt/Soft/Handy_0.8.3_amd64.AppImage ]] && \

@@ -3,3 +3,4 @@
 
     spawn-sh-at-startup "/usr/lib/polkit-kde-authentication-agent-1 &" // Polkit
     spawn-at-startup "noctalia"
+    spawn-sh-at-startup "$HOME/.local/bin/niri-autodisplay"
