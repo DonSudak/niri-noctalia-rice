@@ -1,0 +1,17 @@
+#!/bin/bash
+text="$1"
+
+echo -n "$text" | wl-copy >/dev/null 2>&1 &
+disown $!
+
+sleep 0.2
+
+# Try X11 active window first (for XWayland apps like wezterm)
+x11_win=$(DISPLAY=:0 xdotool getactivewindow 2>/dev/null)
+x11_class=$(DISPLAY=:0 xdotool getwindowclassname "$x11_win" 2>/dev/null)
+
+if echo "$x11_class" | grep -qi "wezterm"; then
+    DISPLAY=:0 xdotool key --window "$x11_win" ctrl+shift+v >/dev/null 2>&1
+else
+    wtype -M ctrl -k v -m ctrl >/dev/null 2>&1
+fi

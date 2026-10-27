@@ -9,8 +9,8 @@ binds {
     Mod+Shift+ESCAPE                     { show-hotkey-overlay; }
 
     // ─── Handy (speech-to-text) ───
-    Ctrl+Space                          hotkey-overlay-title="Handy: transcribe" { spawn "/mnt/Soft/Handy_0.8.3_amd64.AppImage" "--toggle-transcription"; }
-    Ctrl+Shift+Space                    hotkey-overlay-title="Handy: transcribe + AI" { spawn "/mnt/Soft/Handy_0.8.3_amd64.AppImage" "--toggle-post-process"; }
+    Ctrl+Space                          hotkey-overlay-title="Handy: transcribe" { spawn-sh "$HOME/.local/bin/handy --toggle-transcription"; }
+    Ctrl+Shift+Space                    hotkey-overlay-title="Handy: transcribe + AI" { spawn-sh "$HOME/.local/bin/handy --toggle-post-process"; }
 
     // ─── Applications ───
     Mod+Space                           hotkey-overlay-title="Open App Launcher: noctalia launcher" { spawn-sh "noctalia msg panel-toggle launcher"; }

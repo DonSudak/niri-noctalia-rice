@@ -2,7 +2,7 @@
 # Old JSON left in place: ~/.config/noctalia/settings.json
 
 [shell]
-avatar_path = "/home/janna/.face"
+avatar_path = "@HOME@/.face"
 font_family = "Adwaita Sans"
 polkit_agent = true
 setup_wizard_enabled = false
@@ -222,7 +222,7 @@ pure_black_dark = false
 
 [wallpaper]
 enabled = true
-directory = "/home/janna/Pictures/Wallpapers"
+directory = "@HOME@/Pictures/Wallpapers"
 fill_mode = "crop"
 fill_color = "#000000"
 edge_smoothness = 0.05
@@ -237,7 +237,7 @@ transition_on_startup = false
     recursive = true
 
     [wallpaper.default]
-    path = "/home/janna/Pictures/Wallpapers/wallhaven_dggkwj.jpg"
+    path = "@HOME@/Pictures/Wallpapers/wallhaven_dggkwj.jpg"
 
 [plugins]
 auto_update = true
